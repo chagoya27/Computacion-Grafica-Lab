@@ -1,3 +1,11 @@
+/*
+	Práctica 3
+	Leonardo Chagoya Gonzalez
+	30 de agosto de 2025
+	318218814
+*/
+
+
 #include<iostream>
 
 //#define GLEW_STATIC
@@ -38,11 +46,12 @@ int main() {
 
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Proyecciones y transformaciones basicas", nullptr, nullptr);
+	GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Práctica 3. Leonardo Chagoya", nullptr, nullptr);
 
 	int screenWidth, screenHeight;
 
 	glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
+
 
 	//Verificaci�n de errores de creacion  ventana
 	if (nullptr == window)
@@ -62,6 +71,12 @@ int main() {
 		std::cout << "Failed to initialise GLEW" << std::endl;
 		return EXIT_FAILURE;
 	}
+
+	// Imprimimos informacin de OpenGL del sistema
+	std::cout << "> Version: " << glGetString(GL_VERSION) << std::endl;
+	std::cout << "> Vendor: " << glGetString(GL_VENDOR) << std::endl;
+	std::cout << "> Renderer: " << glGetString(GL_RENDERER) << std::endl;
+	std::cout << "> SL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
 
 	// Define las dimensiones del viewport
@@ -232,11 +247,13 @@ int main() {
 		glm::mat4 model=glm::mat4(1); //elemento que queremos dibujar lo controlamos por model
 		glm::mat4 view=glm::mat4(1); // elemento que queremos visualizar
 	
-		view = glm::translate(view, glm::vec3(0.0f,0.0f,-12.0f));
-		model = glm::rotate( model, 0.5f, glm::vec3( 0.0f, 0.0f, 0.0f ) ); // use to compare orthographic and perspective projection
+
+		//configuración inicial de la camara 
+		view = glm::translate(view, glm::vec3(-2.0f,-4.0f,-20.0f));
+		view = glm::rotate(view, glm::radians(-64.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		view = glm::rotate(view, glm::radians(-40.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
-		//view = glm::translate( view, glm::vec3( screenWidth / 2, screenHeight / 4,-700.0f ) ); // use with orthographic projection
-		
+
 
 		// se comunica la informacion de las matrices con los shader
 		//manda la información a los shader
@@ -255,32 +272,81 @@ int main() {
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		/*//creando un nuevo elemento
+
+		
+		//base
+		
+		//segundo cubo
+		model = glm::mat4(1); 
+		model = glm::translate(model, glm::vec3(4.0f, 4.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		//tercer cubo
 		model = glm::mat4(1);
-		model = glm::translate(model, glm::vec3(5.0f, 2.0f, -3.0f));
-		model = glm::rotate(model, 45.0f, glm::vec3(0.0f, 0.0f, 2.0f)); // use to compare orthographic and perspective projection
-		model = glm::scale(model, glm::vec3(2.0f, 1.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(-4.0f, -4.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+		model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		//cuarto cubo
+		model = glm::mat4(1);
+		model = glm::translate(model, glm::vec3(8.0f, 8.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+		model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		
+		//segundo nivel
+		//quinto cubo
+		model = glm::mat4(1);
+		model = glm::translate(model, glm::vec3(-2.0f, -1.0f, 3.5f));
+		model = glm::scale(model, glm::vec3(3.0f, 3.0f, 3.0f));
+		model = glm::rotate(model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		//sexto cubo
+		model = glm::mat4(1);
+		model = glm::translate(model, glm::vec3(1.0f, 2.0f, 3.5f));
+		model = glm::scale(model, glm::vec3(3.0f, 3.0f, 3.0f));
+		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::rotate(model, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
-		//creando un nuevo elemento
+		//septimo cubo
 		model = glm::mat4(1);
-		model = glm::translate(model, glm::vec3(-5.0f, -1.0f, 0.0f));
-		model = glm::rotate(model, 45.0f, glm::vec3(-10.0f, 2.0f, 0.0f)); // use to compare orthographic and perspective projection
-		model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
+		model = glm::translate(model, glm::vec3(4.0f, 5.0f, 3.5f));
+		model = glm::scale(model, glm::vec3(3.0f, 3.0f, 3.0f));
+		model = glm::rotate(model, glm::radians(270.0f), glm::vec3(0, 0, 1));
+		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		glDrawArrays(GL_TRIANGLES, 0, 36);*/
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+		//ultimo nivel
+		
+		//octavo cubo
+		model = glm::mat4(1);
+		model = glm::translate(model, glm::vec3(1.0f, 2.0f, 6.0f));
+		model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
+		model = glm::rotate(model, glm::radians(270.0f), glm::vec3(1, 0, 0));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	
+		
+
 
 
 		glBindVertexArray(0);
-
-
-
-		
-		
-		
-
 		// Swap the screen buffers
 		glfwSwapBuffers(window);
 	
