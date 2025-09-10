@@ -1,6 +1,6 @@
 /*	Practica 4
 *	Chagoya Gonzalez Leonardo
-*	4 de septiembre de 2024
+*	4 de septiembre de 2025
 *	318218814
 */
 
