@@ -1,9 +1,12 @@
 /*
-    Previo 6
+	Practica 6 
     Leonardo Chagoya Gonzalez
-    15 de septiembre de 2025
+    20 de septiembre de 2025
     318218814
 */
+
+/*generar escenarios para el perro
+5 modelos diferentes*/
 
 
 // Std. Includes
@@ -62,7 +65,7 @@ int main( )
     glfwWindowHint( GLFW_RESIZABLE, GL_FALSE );
     
     // Create a GLFWwindow object that we can use for GLFW's functions
-    GLFWwindow *window = glfwCreateWindow( WIDTH, HEIGHT, "Previo 6. Leonardo Chagoya", nullptr, nullptr );
+    GLFWwindow *window = glfwCreateWindow( WIDTH, HEIGHT, "Practica 6. Leonardo Chagoya", nullptr, nullptr );
     
     if ( nullptr == window )
     {
@@ -110,8 +113,7 @@ int main( )
     Shader shader( "Shader/modelLoading.vs", "Shader/modelLoading.frag" );
     
     // Load models
-	Model dog((char *) "Models/RedDog.obj");
-	Model mantis((char*)"Models/lord mantis 3d 01.mtl.obj");
+	Model house((char*)"Models/escenarioP6.obj");
     glm::mat4 projection = glm::perspective( camera.GetZoom( ), ( float )SCREEN_WIDTH/( float )SCREEN_HEIGHT, 0.1f, 100.0f );
     
   
@@ -138,23 +140,9 @@ int main( )
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-        // Draw the loaded model
-        glm::mat4 model(1);
-        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		dog.Draw(shader);
-
-
-
-        //duplicando y manipulando el modelo
-        model = glm::translate(model, glm::vec3(2.0f, 0.0f, 2.0f));
-        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        dog.Draw(shader);
-
-
-		//dibujando el modelo 2
-		model = glm::mat4(1);
-        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        mantis.Draw(shader);
+		glm::mat4 model = glm::mat4(1);
+		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		house.Draw(shader);
 
         // Swap the buffers
         glfwSwapBuffers( window );
