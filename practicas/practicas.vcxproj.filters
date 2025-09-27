@@ -40,8 +40,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Texturizado.cpp">
-      <Filter>Archivos de origen\Shader</Filter>
+    <ClCompile Include="Carga de Modelos.cpp">
+      <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

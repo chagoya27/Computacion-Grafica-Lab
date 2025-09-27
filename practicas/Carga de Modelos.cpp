@@ -1,12 +1,10 @@
 /*
-	Practica 6 
+	Practica 7
     Leonardo Chagoya Gonzalez
-    20 de septiembre de 2025
+    27 de septiembre de 2025
     318218814
 */
 
-/*generar escenarios para el perro
-5 modelos diferentes*/
 
 
 // Std. Includes
@@ -65,7 +63,7 @@ int main( )
     glfwWindowHint( GLFW_RESIZABLE, GL_FALSE );
     
     // Create a GLFWwindow object that we can use for GLFW's functions
-    GLFWwindow *window = glfwCreateWindow( WIDTH, HEIGHT, "Practica 6. Leonardo Chagoya", nullptr, nullptr );
+    GLFWwindow *window = glfwCreateWindow( WIDTH, HEIGHT, "Practica 7. Leonardo Chagoya", nullptr, nullptr );
     
     if ( nullptr == window )
     {
@@ -113,7 +111,7 @@ int main( )
     Shader shader( "Shader/modelLoading.vs", "Shader/modelLoading.frag" );
     
     // Load models
-	Model house((char*)"Models/escenarioP6.obj");
+	Model dado((char*)"Models/dado.obj");
     glm::mat4 projection = glm::perspective( camera.GetZoom( ), ( float )SCREEN_WIDTH/( float )SCREEN_HEIGHT, 0.1f, 100.0f );
     
   
@@ -142,7 +140,7 @@ int main( )
 
 		glm::mat4 model = glm::mat4(1);
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		house.Draw(shader);
+		dado.Draw(shader);
 
         // Swap the buffers
         glfwSwapBuffers( window );

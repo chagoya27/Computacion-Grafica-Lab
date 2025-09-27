@@ -145,7 +145,7 @@
     <None Include="Shader\modelLoading.vs" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Texturizado.cpp" />
+    <ClCompile Include="Carga de Modelos.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

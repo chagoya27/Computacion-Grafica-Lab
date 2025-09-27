@@ -5,6 +5,16 @@
 * 318218814 
 */
 
+/*buscar una textura de dado y con una sola imagen. Tiene que ser una
+	TEXTURA 2^N
+	n(n)
+	jpg o png
+
+	imagen> modo RGB 
+	imagen> escalar imagen
+	para aplicar transparencia
+		capa>transparencia>añadir canal alfa
+*/
 
 #include <iostream>
 #include <cmath>
