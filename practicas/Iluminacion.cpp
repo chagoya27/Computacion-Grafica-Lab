@@ -1,8 +1,9 @@
-/*	Previo 8
+﻿/*	Práctica 8
 *	Chagoya Gonzalez Leonardo
-*	30 de septiembre de 2025
+*	12  de octubre de 2025
 *	318218814
 */
+
 
 // Std. Includes
 #include <string>
@@ -44,14 +45,28 @@ bool firstMouse = true;
 
 
 // Light attributes
-glm::vec3 lightPos(0.5f, 0.5f, 2.5f); //posicion de la luz
-glm::vec3 lightPos2(-1.0f, 0.2f, -6.5f); //posicion de la luz 2
+glm::vec3 lightPos(-4.0f, 0.0f, 0.0f); //para modificar la posición inicial de la luz 1
+glm::vec3 lightPos2(0.0f, 0.0f, -10.0f); //para modificar la posición inicial de la luz 2
 float movelightPos = 0.0f; //movimiento de la luz
 float movelightPos2 = 0.0f; //movimiento de la luz 2
+float theta1 = 0.0f; //angulo de la luz
+float theta2 = 0.0f; //angulo de la luz 2
+
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 float rot = 0.0f;
 bool activanim = false;
+
+// variables para generar las trayectorias de las luces (elipse)
+float a1 = 16.0f, b1 = 10.0f, c1 = 0.0f;
+float a2 = 20.0f, b2 = 10.0f, c2 = 0.0f;
+
+// Variables para el modo dia y noche
+bool light1On = true;
+bool light2On = false;
+
+
+float PI_LIMIT = 3.1415926535f;
 
 int main()
 {
@@ -65,7 +80,7 @@ int main()
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     // Create a GLFWwindow object that we can use for GLFW's functions
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Previo 8. Leonardo Chagoya", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Practica 8. Leonardo Chagoya", nullptr, nullptr);
 
     if (nullptr == window)
     {
@@ -222,29 +237,74 @@ int main()
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Movimiento de elipses de las luces
+
+        float x1 = a1 * cos(theta1);
+        float y1 = b1 * sin(theta1);
+        float z1 = c1 * sin(theta1 * 2.0f);
+
+		float x2 = a2 * cos(theta2);
+		float y2 = b2 * sin(theta2);
+		float z2 = c2 * sin(theta2 * 2.0f);
+
+        glm::vec3 currentLightPos1 = lightPos + glm::vec3(x1, y1, z1);
+        glm::vec3 currentLightPos2 = lightPos2 + glm::vec3(0,y2 ,x2);
         
         lightingShader.Use();
-		GLint lightPosLoc = glGetUniformLocation(lightingShader.Program, "light.position"); //shader de iluminacion
+        
+        //posicion de la camara
         GLint viewPosLoc = glGetUniformLocation(lightingShader.Program, "viewPos");
-		glUniform3f(lightPosLoc, lightPos.x + movelightPos, lightPos.y + movelightPos, lightPos.z + movelightPos); //posicion de la luz
         glUniform3f(viewPosLoc, camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
+
+
+        //luz1
+        GLint lightPosLoc = glGetUniformLocation(lightingShader.Program, "light.position"); //shader de iluminacion
+        glUniform3f(lightPosLoc, currentLightPos1.x, currentLightPos1.y, currentLightPos1.z);
 		
         //luz 2
         GLint lightPosLoc2 = glGetUniformLocation(lightingShader.Program, "light2.position");
-        glUniform3f(lightPosLoc2, lightPos2.x + movelightPos2, lightPos2.y + movelightPos2, lightPos2.z +movelightPos2);
+        glUniform3f(lightPosLoc2, 0, currentLightPos2.y, currentLightPos2.x);
 
-
-		// propiedades de la luz 2
-        glUniform3f(glGetUniformLocation(lightingShader.Program, "light2.ambient"), 0.4f, 0.5f, 0.4f);
-        glUniform3f(glGetUniformLocation(lightingShader.Program, "light2.diffuse"), 0.8f, 0.8f, 0.5f);
-        glUniform3f(glGetUniformLocation(lightingShader.Program, "light2.specular"), 0.2f, 0.2f, 0.2f);
+		//colores de las luces
+		glm::vec3 lightColor1 = glm::vec3(1.00f, 1.00f, 0.98f); //blanco para el dia
+        glm::vec3 lightColor2 = glm::vec3(0.00f, 0.00f, 1.00f); // azul intenso para la noche
 
 
 
-        // Set lights properties
-		glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"), 0.3f, 0.3f, 0.3f);
-        glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"), 0.3f, 0.3f, 0.3f);
-        glUniform3f(glGetUniformLocation(lightingShader.Program, "light.specular"), 0.0f, 0.0f, 0.0f);
+		//luz 1 
+        if (light1On) //encendida
+        {
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"),
+                lightColor1.r * 0.25f, lightColor1.g * 0.25f, lightColor1.b * 0.25f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"),
+                lightColor1.r * 1.0f, lightColor1.g * 1.0f, lightColor1.b * 1.0f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light.specular"),
+                lightColor1.r * 0.2f, lightColor1.g * 0.2f, lightColor1.b * 0.2f);
+        }
+		else //apagada
+        {
+            
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"), 0.0f, 0.0f, 0.0f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"), 0.0f, 0.0f, 0.0f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light.specular"), 0.0f, 0.0f, 0.0f);
+        }
+
+        // Luz 2
+		if (light2On) //encendida
+        {
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light2.ambient"),
+                lightColor2.r * 0.5f, lightColor2.g * 0.5f, lightColor2.b * 0.2f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light2.diffuse"),
+                lightColor2.r * 0.2f, lightColor2.g * 0.2f, lightColor2.b * 1.5f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light2.specular"),
+                lightColor2.r * 0.5f, lightColor2.g * 0.5f, lightColor2.b * 0.2f);
+        }
+		else //apagada
+        {
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light2.ambient"), 0.0f, 0.0f, 0.0f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light2.diffuse"), 0.0f, 0.0f, 0.0f);
+            glUniform3f(glGetUniformLocation(lightingShader.Program, "light2.specular"), 0.0f, 0.0f, 0.0f);
+        }
 
 
 
@@ -253,10 +313,12 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
         // Set material properties
-		glUniform3f(glGetUniformLocation(lightingShader.Program, "material.ambient"), 0.5f, 0.5f, 0.5f);
-		glUniform3f(glGetUniformLocation(lightingShader.Program, "material.diffuse"), 0.8f, 0.8f, 0.0f);
-		glUniform3f(glGetUniformLocation(lightingShader.Program, "material.specular"), 1.0f, 1.0f, 1.0f);
-		glUniform1f(glGetUniformLocation(lightingShader.Program, "material.shininess"), 0.8f);
+        glUniform3f(glGetUniformLocation(lightingShader.Program, "material.ambient"), 0.5f, 0.5f, 0.5f);
+        glUniform3f(glGetUniformLocation(lightingShader.Program, "material.diffuse"), 0.9f, 0.9f, 0.9f); 
+        glUniform3f(glGetUniformLocation(lightingShader.Program, "material.specular"), 0.3f, 0.3f, 0.3f);
+        glUniform1f(glGetUniformLocation(lightingShader.Program, "material.shininess"), 16.0f);
+
+
 
         // Draw the loaded model
         glm::mat4 model(1);
@@ -272,25 +334,29 @@ int main()
 
 
 
+        //dibujar las lamparas
         lampshader.Use();
         glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
+		// cubo blanco (luz 1)
         model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPos + movelightPos);
-        model = glm::scale(model, glm::vec3(0.3f));
+        model = glm::translate(model, currentLightPos1);
+        model = glm::scale(model, glm::vec3(0.5f));
         glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        glUniform3f(glGetUniformLocation(lampshader.Program, "lampColor"), lightColor1.r, lightColor1.g, lightColor1.b);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-
+		// cubo azul (luz 2)
         model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPos2 + movelightPos2); // **Usar la nueva posici�n de luz**
-        model = glm::scale(model, glm::vec3(0.3f));
+        model = glm::translate(model, currentLightPos2);
+        model = glm::scale(model, glm::vec3(0.5f));
         glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        glUniform3f(glGetUniformLocation(lampshader.Program, "lampColor"), lightColor2.r, lightColor2.g, lightColor2.b);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
         glBindVertexArray(0);
+
 
         // Swap the buffers
         glfwSwapBuffers(window);
@@ -355,28 +421,48 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
             keys[key] = false;
         }
     }
-
     if (keys[GLFW_KEY_O])
     {
-       
-        movelightPos += 0.1f;
+        if (theta1 < PI_LIMIT)
+        {
+            theta1 += 0.05f;
+        }
     }
 
     if (keys[GLFW_KEY_L])
     {
-        
-        movelightPos -= 0.1f;
+        if (theta1 > 0.0f)
+        {
+            theta1 -= 0.05f;
+        }
     }
     if (keys[GLFW_KEY_I])
     {
-
-        movelightPos2 += 0.1f;
+        if (theta2 < PI_LIMIT)
+        {
+            theta2 += 0.05f;
+        }
     }
 
     if (keys[GLFW_KEY_K])
     {
 
-        movelightPos2 -= 0.1f;
+        if (theta2 > 0.0f)
+        {
+            theta2 -= 0.05f;
+        }
+    }
+
+    if (keys[GLFW_KEY_1])
+    {
+        light1On = true;
+        light2On = false;
+    }
+
+    if (keys[GLFW_KEY_2])
+    {
+        light1On = false;
+        light2On = true;
     }
 
 
