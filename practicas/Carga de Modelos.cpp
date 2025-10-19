@@ -111,7 +111,7 @@ int main( )
     Shader shader( "Shader/modelLoading.vs", "Shader/modelLoading.frag" );
     
     // Load models
-	Model dado((char*)"Models/dado.obj");
+	Model dado((char*)"Models/proyecto.obj");
     glm::mat4 projection = glm::perspective( camera.GetZoom( ), ( float )SCREEN_WIDTH/( float )SCREEN_HEIGHT, 0.1f, 100.0f );
     
   

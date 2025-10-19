@@ -1,0 +1,48 @@
+newmtl lambert18SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd -mm_0_0.906077_brck49pared1.jpg
+bump  -bm 0.1 brck49Lb.jpg
+Ni 1.00
+newmtl lambert19SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd germany010BROWN.jpg
+bump  -bm 0.1 germany010b.jpg
+Ni 1.00
+newmtl lambert20SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd -mm_0_0.939227_shin24XL.jpg
+bump  -bm 1 shin24XLb.jpg
+Ni 1.00
+newmtl lambert22SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd hungary001.jpg
+bump  -bm 1 hungary001b.jpg
+Ni 1.00
+newmtl lambert23SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd wndw107M.jpg
+bump  -bm 1 wndw107Mb.jpg
+Ni 1.00
+newmtl lambert24SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd entr002M.jpg
+bump  -bm 0.05 entr002Mb.jpg
+Ni 1.00
