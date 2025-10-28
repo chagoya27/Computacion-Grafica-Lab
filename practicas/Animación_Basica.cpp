@@ -1,7 +1,7 @@
 /*
 	Práctica 10
 	Leonardo Chagoya Gonzalez
-	21 de octubre de 2025
+	26 de octubre de 2025
 	318218814
 
 
@@ -54,10 +54,26 @@ bool firstMouse = true;
 glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
 bool active;
 bool up = true;
+glm::vec3 pivot;
+
+bool animate = false;
+bool encounter = false;
+float dogY = 0.0f;
+float ballY = 0.0f;
+
+
+static float angle = 0.0f;
+float radius = 2.0f;     
+float speed = 1.0f;      
+
+float tolerance = glm::radians(20.0f);
+float deg180 = glm::radians(180.0f);
+float deg360 = glm::radians(360.0f);
+
 
 // Positions of the point lights
 glm::vec3 pointLightPositions[] = {
-	glm::vec3(0.0f,2.0f, 0.0f),
+	glm::vec3(0.0f,0.0f, 0.0f),
 	glm::vec3(0.0f,0.0f, 0.0f),
 	glm::vec3(0.0f,0.0f,  0.0f),
 	glm::vec3(0.0f,0.0f, 0.0f)
@@ -131,7 +147,7 @@ int main()
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);*/
 
 	// Create a GLFWwindow object that we can use for GLFW's functions
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Previo 10. Leonardo Chagoya", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Practica 10. Leonardo Chagoya", nullptr, nullptr);
 
 	if (nullptr == window)
 	{
@@ -254,6 +270,7 @@ int main()
 		lightColor.z= sin(glfwGetTime() *Light1.z);
 
 		
+		pivot = glm::vec3(pointLightPositions[0].x, pointLightPositions[0].y, pointLightPositions[0].z);
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[0].position"), pointLightPositions[0].x, pointLightPositions[0].y, pointLightPositions[0].z);
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[0].ambient"), lightColor.x,lightColor.y, lightColor.z);
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[0].diffuse"), lightColor.x,lightColor.y,lightColor.z);
@@ -303,12 +320,21 @@ int main()
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		Piso.Draw(lightingShader);
 
+		//perro
 		model = glm::mat4(1);
+		model = glm::translate(model, pivot);
+		model = glm::rotate(model, -angle, glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(radius, dogY, 0.0f));
+
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 0);
 		Dog.Draw(lightingShader);
 
+		//pelota
 		model = glm::mat4(1);
+		model = glm::translate(model, pivot);
+		model = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(radius, ballY + 1.0, 0.0f));
 		glEnable(GL_BLEND);//Avtiva la funcionalidad para trabajar el canal alfa
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -459,6 +485,12 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 		AnimBall = !AnimBall;
 		
 	}
+
+	if (keys[GLFW_KEY_M])
+	{
+		animate = !animate;
+		
+	}
 }
 void Animation() {
 	if (AnimBall)
@@ -479,6 +511,39 @@ void Animation() {
 	else
 	{
 		rotBall = 0.0f;
+	}
+
+
+	if (animate) {
+		
+		// se calcula el nuevo angulo
+		angle += speed * deltaTime;
+
+		// se mantiene el angulo entre 0 y 2PI
+		if (angle > glm::radians(360.0f))
+			angle -= glm::radians(360.0f);
+
+		// logica de encuentro
+		if (!encounter && (fabs(angle - deg180) < tolerance || fabs(angle - deg360) < tolerance || angle < tolerance)) {
+			dogY += 0.001f;
+			ballY -= 0.001f;
+
+			// haciendo que el perro y la pelota se encuentren
+			if (dogY >= 0.65f && ballY <= -0.65f)
+				dogY = 0.65f, ballY = -0.65f,
+				encounter = true;
+		}
+
+		//regresando a la posicion inicial
+		if (encounter) {
+			dogY -= 0.001f;
+			ballY += 0.001f;
+			if (dogY <= 0.0f && ballY >= 0.0f)
+				dogY = 0.0f, ballY =-0.0f,
+				encounter = false;
+		}
+			
+
 	}
 }
 
